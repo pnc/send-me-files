@@ -1,0 +1,18 @@
+<% if @allowed %>
+<script id="template-upload" type="text/x-tmpl">
+<div id="file-{%=o.unique_id%}" class="upload">
+  {%=o.name%}
+  <div class="progress"><div class="bar" style="width: 0%"></div></div>
+</div>
+</script>
+
+<h2>Choose a file from your computer</h2>
+
+<span class="byline">You can choose more than one file if you want.</span>
+
+<%= s3_uploader_form callback_url: uploads_url, callback_param: "upload[url]", id: "uploader" do %>
+  <%= file_field_tag :file, multiple: true %>
+<% end %>
+<% else %>
+<p>It looks like you ended up here by mistake.</p>
+<% end %>
