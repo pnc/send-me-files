@@ -9,6 +9,18 @@ into installing Dropbox or Google Drive or whatever.
 
 It's a Rails 4 app, so you can easily deploy it (for free!) to Heroku or a similar provider.
 
+# Screenshots
+
+<img src="http://f.cl.ly/items/420w0w0c403E2C3E090W/Screen%20Shot%202014-03-05%20at%2022.35.21.png">
+
+__It works from iOS 6 and 7, too:__
+
+<img src="http://f.cl.ly/items/0W420j0T203B1q2w143N/Pulsar%20Mar%205,%202014,%2022%3A37%3A13.png">
+
+When people upload a file, you get an email:
+
+<img src="http://f.cl.ly/items/3p2J3H2n0s3F47050h3T/Screen%20Shot%202014-03-05%20at%2020.57.31.png">
+
 # Deploying Your Own
 
 1. Clone (perhaps even fork and clone) this repository.
