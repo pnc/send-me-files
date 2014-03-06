@@ -8,7 +8,7 @@
 
 <h2>Choose a file from your computer</h2>
 
-<span class="byline">You can choose more than one file if you want.</span>
+<div id="multiple">You can choose more than one file if you want.</div>
 
 <%= s3_uploader_form callback_url: uploads_url, callback_param: "upload[url]", id: "uploader" do %>
   <%= file_field_tag :file, multiple: true %>

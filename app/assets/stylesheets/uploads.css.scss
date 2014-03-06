@@ -2,6 +2,50 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+@import "compass/css3/border-radius";
+
+body {
+  font-family: 'Source Sans Pro';
+  background-image: asset-url('buildings.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  text-align: center;
+  color: #fafafa;
+  padding: 0;
+  margin: 0;
+}
+
+h1 {
+  font-size: 3em;
+  font-weight: 100;
+  margin: 1em 0 0.2em;
+}
+
+h2 {
+  margin: 0 0 0.2em;
+}
+
+.inner {
+  background-color: white;
+  color: #2A2829;
+  padding: 5em 0;
+  font-size: 1em;
+}
+
+@media (min-width: 700px) {
+  html {
+    font-size: 26px;
+  }
+  .inner {
+    margin: 0 auto;
+    width: 600px;
+    padding: 50px;
+    @include border-radius(2em)
+  }
+}
+
 #file {
   line-height: 14pt;
   margin-bottom: 1em;
@@ -18,4 +62,8 @@
 
 .upload {
   margin: 1em auto
+}
+
+input[type=file] {
+
 }

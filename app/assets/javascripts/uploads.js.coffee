@@ -3,6 +3,9 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 jQuery ->
+  if !Modernizr.input['multiple']
+    $("#multiple").hide()
+
   $("#uploader").S3Uploader
     remove_completed_progress_bar: false
 
