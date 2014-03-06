@@ -46,7 +46,7 @@ It's a Rails 4 app, so you can easily deploy it (for free!) to Heroku or a simil
         }
 
 7. Add your own email address as a subscriber to the SNS topic. (Or subscribe via text messages, which is even more awesome.)
-8. Generate a session secret with `rake secret`.
+8. Generate a session secret with `rake secret`. You'll provide this to the application as an environment variable called `SECRET_KEY`.
 8. Deploy this application to Heroku or whatever (perhaps `git push heroku master`).
 9. Define the required enviroment variables using `heroku config:set` or whatever your provider calls it.
 
@@ -68,7 +68,7 @@ It's a Rails 4 app, so you can easily deploy it (for free!) to Heroku or a simil
         AWS_SECRET=your-secret
         HOSTNAME=yourdomain.com
         S3_BUCKET=your-bucket
-        SNS_TOPIC=arn:aws:sns:us-east-1:1234567:your-arn
+        SNS_TOPIC=arn:aws:sns:us-east-1:1234567:your-sns-topic
         SECRET_KEY=abcdef123456
 
     Optionally, you can specify an access password that must be supplied as
