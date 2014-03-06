@@ -3,10 +3,11 @@
 This is the tiniest, cheapest way to let people send you huge files
 for cents per month.
 
-__Send Phil Files__ is a Rails app that can be deployed to Heroku or a
-similar provider and lets people send you large files from their
-browser, without the constraints of email and without talking them
+__Send Phil Files__ lets people send you large files from their
+browser, without the file size constraints of email and without talking them
 into installing Dropbox or Google Drive or whatever.
+
+It's a Rails 4 app, so you can easily deploy it (for free!) to Heroku or a similar provider.
 
 # Deploying Your Own
 
