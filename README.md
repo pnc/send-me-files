@@ -1,9 +1,9 @@
-# Send Phil Files
+# Send Me Files
 
 This is the tiniest, cheapest way to let people send you huge files
 for cents per month.
 
-__Send Phil Files__ lets people send you large files from their
+__Send Me Files__ lets people send you large files from their
 browser, without the file size constraints of email and without talking them
 into installing Dropbox or Google Drive or whatever.
 
@@ -77,6 +77,10 @@ It's a Rails 4 app, so you can easily deploy it (for free!) to Heroku or a simil
         PASSWORD=someSecretPassword
     
     For this example, people would need to go to `your-app.herokuapp.com/?a=someSecretPassword` to be able to upload files. __This is designed to keep out people who stumble on the page, not to provide high security.__
+    
+    Also, you can define an environment variable called NAME to make the app display your name rather than just "me".
+    
+        NAME=Jeffrey
 
 10. Once your app is deployed and the configuration variables are defined, configure the bucket to accept cross-origin requests by running `rake deployment:configure_bucket` from your production environment (probably with `heroku run`.)
 
