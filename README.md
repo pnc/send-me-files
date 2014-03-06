@@ -26,7 +26,7 @@ When people upload a file, you get an email:
 1. Clone (perhaps even fork and clone) this repository.
 2. Create a Heroku account if you don't have one, or get an account with a similar provider.
 3. Create an AWS account if you don't already have one.
-4. Use the AWS Console to create an S3 bucket (for storing the upload files.)
+4. Use the AWS Console to create an S3 bucket (for storing the uploaded files.)
 5. Create an SNS topic (for notifying you of new files.)
 6. Create an IAM user for your application to use. Give it this policy:
 
