@@ -6,7 +6,7 @@ namespace :deployment do
     bucket = s3.buckets[name]
     raise "Bucket #{name} does not exist" unless bucket.exists?
 
-    hostname = SendPhilFiles::Application.config.hostname
+    hostname = SendMeFiles::Application.config.hostname
     rule = AWS::S3::CORSRule.new(id: "upload-rule",
                                  allowed_methods: %w(GET POST PUT),
                                  allowed_origins: ["http://#{hostname}"],

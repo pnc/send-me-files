@@ -1,4 +1,4 @@
-SendPhilFiles::Application.routes.draw do
+SendMeFiles::Application.routes.draw do
   root 'uploads#new'
   resources :uploads, only: %i[new create]
   # The priority is based upon order of creation: first created -> highest priority.

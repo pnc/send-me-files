@@ -3,4 +3,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-SendPhilFiles::Application.load_tasks
+SendMeFiles::Application.load_tasks
