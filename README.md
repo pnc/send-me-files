@@ -88,7 +88,7 @@ When people upload a file, you get an email:
 
         PASSWORD=someSecretPassword
     
-    For this example, people would need to go to `your-app.herokuapp.com/?a=someSecretPassword` to be able to upload files. __This is designed to keep out people who stumble on the page, not to provide high security.__
+    For this example, people would need to go to `your-app.herokuapp.com/?a=someSecretPassword` to be able to upload files. __This is designed to keep out people who stumble on the page, not to provide security.__
     
     Also, you can define an environment variable called NAME to make the app display your name rather than just "me".
     
