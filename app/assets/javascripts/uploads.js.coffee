@@ -11,7 +11,7 @@ jQuery ->
 
   $("#uploader").bind "ajax:success", (e, data) ->
     console.log("Got this back: ", data)
-    $("#banner").append($("<p>").addClass("message").text(data.message));
+    $("#content").append($("<p>").addClass("message").text(data.message));
 
   $("#uploader").bind "ajax:error", (e, data) ->
-    $("#banner").append($("<p>").addClass("message").text("Your file couldn't be sent. Maybe try again?"));
+    $("#content").append($("<p>").addClass("message").text("Your file couldn't be sent. Maybe try again?"));
