@@ -1,6 +1,10 @@
 class UploadsController < ApplicationController
   def new
-    @allowed = params[:a] == "kj3KFO9eEOKFjwwoe"
+    @allowed = if Rails.application.config.password
+                 params[:a] == Rails.application.config.password
+               else
+                 true
+               end
   end
 
   def create

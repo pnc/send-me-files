@@ -66,5 +66,12 @@ It's a Rails 4 app, so you can easily deploy it (for free!) to Heroku or a simil
         S3_BUCKET=your-bucket
         SNS_TOPIC=arn:aws:sns:us-east-1:1234567:your-arn
 
+    Optionally, you can specify an access password that must be supplied as
+    a query parameter called `a` in order to upload files:
+
+        PASSWORD=someSecretPassword
+    
+    For this example, people would need to go to `your-app.herokuapp.com/?a=someSecretPassword` to be able to upload files. __This is designed to keep out people who stumble on the page, not to provide high security.__
+
 10. Once your app is deployed and the configuration variables are defined, configure the bucket to accept cross-origin requests by running `rake deployment:configure_bucket` from your production environment (probably with `heroku run`.)
 

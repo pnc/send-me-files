@@ -27,6 +27,7 @@ module SendPhilFiles
     config.hostname = ENV["HOSTNAME"] || raise("Specify HOSTNAME")
     config.sns_topic = ENV["SNS_TOPIC"] || raise("Specify SNS_TOPIC")
     config.s3_bucket = ENV["S3_BUCKET"] || raise("Specify S3_BUCKET")
+    config.password = ENV["PASSWORD"]
 
     AWS.config(:access_key_id => ENV["AWS_KEY"],
                :secret_access_key => ENV["AWS_SECRET"])
