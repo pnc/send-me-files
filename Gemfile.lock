@@ -88,7 +88,7 @@ GEM
     minitest (5.11.3)
     modernizr-rails (2.7.1)
     multi_json (1.13.1)
-    nokogiri (1.8.2)
+    nokogiri (1.8.3)
       mini_portile2 (~> 2.3.0)
     rack (1.6.10)
     rack-test (0.6.3)
@@ -123,7 +123,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (12.3.1)
-    rdoc (6.0.3)
+    rdoc (6.0.4)
     s3_direct_upload (0.1.7)
       coffee-rails (>= 3.1)
       jquery-fileupload-rails (~> 0.4.1)
@@ -154,7 +154,7 @@ GEM
     turbolinks-source (5.1.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
-    uglifier (4.1.10)
+    uglifier (4.1.12)
       execjs (>= 0.3.0, < 3)
 
 PLATFORMS
