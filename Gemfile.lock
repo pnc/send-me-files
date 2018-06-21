@@ -137,7 +137,7 @@ GEM
       sprockets-rails (~> 2.0)
     sdoc (1.0.0)
       rdoc (>= 5.0)
-    sprockets (2.12.4)
+    sprockets (2.12.5)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
