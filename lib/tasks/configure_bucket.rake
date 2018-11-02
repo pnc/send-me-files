@@ -9,7 +9,7 @@ namespace :deployment do
     hostname = SendMeFiles::Application.config.hostname
     rule = AWS::S3::CORSRule.new(id: "upload-rule",
                                  allowed_methods: %w(GET POST PUT),
-                                 allowed_origins: ["http://#{hostname}"],
+                                 allowed_origins: ["http://#{hostname}", "https://#{hostname}"],
                                  allowed_headers: ["*"])
     bucket.cors.add(rule)
   end
