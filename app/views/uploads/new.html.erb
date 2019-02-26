@@ -10,7 +10,7 @@
 
 <div id="multiple">You can choose more than one file if you want.</div>
 
-<%= s3_uploader_form callback_url: uploads_url, callback_param: "upload[url]", id: "uploader" do %>
+<%= s3_uploader_form callback_url: uploads_path, callback_param: "upload[url]", id: "uploader" do %>
   <%= file_field_tag :file, multiple: true %>
 <% end %>
 <% else %>
