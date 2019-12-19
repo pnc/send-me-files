@@ -49,4 +49,4 @@ end
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-ruby "2.6.1"
+ruby "2.6.5"
