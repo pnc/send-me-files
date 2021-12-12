@@ -1,0 +1,26 @@
+{
+  "license": "MIT",
+  "devDependencies": {
+    "@parcel/reporter-bundle-analyzer": "^2.0.1",
+    "@playwright/test": "^1.16.3",
+    "parcel": "^2.0.0-beta.2",
+    "playwright": "^1.10.0",
+    "typescript": "^4.2.4"
+  },
+  "scripts": {
+    "start": "parcel serve ./index.html & cd send-server && sam local start-api --env-vars env.json",
+    "build": "parcel build ./index.html",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.41.0",
+    "@aws-sdk/lib-storage": "^3.41.0",
+    "pretty-bytes": "^5.6.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "uuid": "^8.3.2"
+  },
+  "alias": {
+    "stream": "none"
+  }
+}

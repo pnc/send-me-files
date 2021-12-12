@@ -1,0 +1,7 @@
+.parcel-cache
+dist/
+java-send-server/
+node_modules/
+yarn-error.log
+send-server/.aws-sam
+test-results/

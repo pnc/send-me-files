@@ -1,0 +1,344 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Allows huge files to be requested and received via S3.
+
+Globals:
+  Function:
+    Timeout: 15
+
+Parameters:
+  DeployDomain:
+    Type: String
+    Description: The FQDN at which the site will be deployed.
+    Default: send.philcalvin.com
+
+  DeployZoneDomain:
+    Type: String
+    Description: The Route 53 zone that contains the FQDN of the deployment domain. (Can be the same if deploying to an apex.)
+    Default: philcalvin.com
+
+  AcmCertificateArn:
+    Description: The already-issued full ARN of the ACM certificate to use to secure the site. Must have a CN or SNI that includes the deployment domain name.
+    Default: arn:aws:acm:us-east-1:0000000000:certificate/00000000-eeee-ffff-ffff-123456780000
+    Type: String
+
+  NotificationEmail:
+    Description: The initial email address to which download links should be delivered. You can add more in SNS later.
+    Type: String
+
+  Development:
+    Type: String
+    Default: "No"
+    AllowedValues:
+      - "Yes"
+      - "No"
+
+Conditions:
+  DevelopmentMode: !Equals
+    - !Ref Development
+    - "Yes"
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: "Deployment Configuration"
+        Parameters:
+          - DeployDomain
+          - DeployZoneDomain
+          - AcmCertificateArn
+          - NotificationEmail
+      -
+        Label:
+          default: "Development Settings"
+        Parameters:
+          - Development
+    ParameterLabels:
+      DeployDomain:
+        default: "Deployment Domain Name"
+      DeployDomainZone:
+        default: "Parent Zone of Domain Name"
+      NotificationEmail:
+        default: "Notification Email Address"
+      AcmCertificateArn:
+        default: "ACM Certificate ARN"
+      Development:
+        default: "Enable development mode?"
+
+Resources:
+  StorageBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: LogsRule
+            Status: Enabled
+            Prefix: "logs"
+            ExpirationInDays: 14
+          - Id: AbandonedUploadsRule
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+      CorsConfiguration:
+        CorsRules:
+          # Based on https://github.com/TTLabs/EvaporateJS/wiki/Configuring-The-AWS-S3-Bucket
+          - AllowedHeaders:
+              - x-amz-*
+              - amz-*
+              - Authorization
+              - Content-Type
+            AllowedMethods:
+              - PUT # Used for small single-part uploads
+              - POST # Used for multipart uploads
+            AllowedOrigins: !If [DevelopmentMode,
+              [!Sub "https://${DeployDomain}", "http://localhost:1234"],
+              [!Sub "https://${DeployDomain}"]]
+            ExposedHeaders:
+              - Connection
+              - Server
+              - Date
+              - ETag
+            Id: allow-upload
+            MaxAge: 1800
+
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Ref AWS::StackName
+      StageName: api
+      EndpointConfiguration:
+        # We'll put a CloudFront distribution in front of the endpoint ourselves,
+        # so use REGIONAL rather than the default of EDGE.
+        Type: REGIONAL
+  ClientRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt CredentialsFunctionRole.Arn
+            Action:
+              - 'sts:AssumeRole'
+          # Convenient for local testing.
+          # TODO: Only when a flag is set
+          - Effect: Allow
+            Principal:
+              AWS:
+                - arn:aws:iam::357675712930:user/phil
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: client
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource:
+                  - !Sub "${StorageBucket.Arn}/uploads/${!aws:userid}/*"
+  CredentialsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: credentials-function/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      MemorySize: 256
+      Tracing: Active
+      Environment:
+        Variables:
+          ANONYMOUS_ROLE_ARN: !GetAtt ClientRole.Arn
+          S3_BUCKET: !Ref StorageBucket
+      Events:
+        PostCredentials:
+          Type: Api
+          Properties:
+            Path: /credentials
+            Method: post
+            RestApiId: !Ref RestApi
+  NotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: notification-function/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Sub "${AWS::StackName}-*"
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt NotificationTopic.TopicName
+      Environment:
+        Variables:
+          TOPIC_ARN: !Ref NotificationTopic
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket:
+              Ref: StorageBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: !Ref NotificationEmail
+          Protocol: email
+  SiteBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+  S3AliasCachePolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        CookiesConfig:
+          CookieBehavior: none
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers:
+            - Access-Control-Request-Method
+            - Access-Control-Request-Headers
+            - amz-sdk-invocation-id
+            - amz-sdk-request
+        Name: !Sub "${AWS::StackName}-S3Alias"
+        Comment: Allows putting a whitelabel domain in front of an S3 bucket.
+        QueryStringsConfig:
+          QueryStringBehavior: all
+  WebsiteCDN:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Comment: !Sub "CDN for ${DeployDomain}"
+        Aliases:
+          - !Ref DeployDomain
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmCertificateArn
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Enabled: true
+        IPV6Enabled: true
+        HttpVersion: http2
+        Logging:
+          Bucket: !Sub "${StorageBucket.DomainName}"
+          Prefix: "logs/"
+        DefaultCacheBehavior:
+          TargetOriginId: only-origin
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
+          Compress: true
+          ViewerProtocolPolicy: redirect-to-https
+        CacheBehaviors:
+          - PathPattern: uploads/*
+            TargetOriginId: s3-origin
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - PATCH
+              - POST
+              - DELETE
+            # See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-origin-request-policies.html
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # CachingDisabled
+            # We have to use a custom policy here in order to forward CORS headers and two
+            # amz- headers that are included in the S3 v4 signature, or else they'll be stripped
+            # and the signature will become invalid.
+            OriginRequestPolicyId: !Ref S3AliasCachePolicy
+            Compress: true
+            ViewerProtocolPolicy: https-only
+          - AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - PATCH
+              - POST
+              - DELETE
+            # See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-origin-request-policies.html
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad # CachingDisabled
+            # We very specifically must use a policy that does NOT forward all headers.
+            # This would mean the Host header (the Host of the CloudFront distribution CNAME) would
+            # be forwarded to API Gateway, and it would refuse the request with a cryptic
+            # {"message":"Forbidden"} corresponding to an unrecognized hostname.
+            OriginRequestPolicyId: acba4595-bd28-49b8-b9fe-13317c0390fa # UserAgentRefererHeaders
+            Compress: true
+            PathPattern: credentials
+            TargetOriginId: api-origin
+            ViewerProtocolPolicy: https-only
+        DefaultRootObject: index.html
+        Origins:
+          # Used to map requests to the API Gateway and then the Lambda functions.
+          - Id: api-origin
+            DomainName: !Sub "${RestApi}.execute-api.${AWS::Region}.amazonaws.com"
+            OriginPath: /api
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
+          # Used to alias/whitelabel the StorageBucket to avoid problems on corporate
+          # networks that block direct access to *.s3.amazonaws.com. We point the AWS JS SDK
+          # at this instead of S3's endpoints directly.
+          - Id: s3-origin
+            DomainName: !Join
+              - ''
+              - !Split
+                - "https://"
+                - !Sub "${StorageBucket.RegionalDomainName}"
+            S3OriginConfig: {}
+          # Used to serve the static content (HTML, JS, CSS) out of SiteBucket.
+          - Id: only-origin
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+              OriginSSLProtocols:
+                - TLSv1.2
+            DomainName: !Join
+              - ''
+              - !Split
+                - "http://"
+                - !Sub "${SiteBucket.WebsiteURL}"
+  WebsiteDNSName:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName: !Sub "${DeployZoneDomain}."
+      Comment: CNAME redirect custom name to CloudFront distribution
+      Name: !Ref DeployDomain
+      Type: A
+      AliasTarget:
+        DNSName: !Sub "${WebsiteCDN.DomainName}"
+        HostedZoneId: Z2FDTNDATAQYW2
+  WebsiteDNSNameAAAA:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName: !Sub "${DeployZoneDomain}."
+      Comment: CNAME redirect custom name to CloudFront distribution
+      Name: !Ref DeployDomain
+      Type: AAAA
+      AliasTarget:
+        DNSName: !Sub "${WebsiteCDN.DomainName}"
+        HostedZoneId: Z2FDTNDATAQYW2
+
+Outputs:
+  SiteBucketURL:
+    Description: "Upload the static site to this bucket"
+    Value: !Ref SiteBucket
