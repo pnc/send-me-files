@@ -14,10 +14,7 @@
     "aws-xray-sdk-node": "^0.0.1-security"
   },
   "scripts": {
-    "test": "mocha tests/unit/"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^8.2.1"
   }
 }

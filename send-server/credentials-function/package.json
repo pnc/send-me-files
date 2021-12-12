@@ -11,10 +11,7 @@
     "aws-xray-sdk": "^3.3.4"
   },
   "scripts": {
-    "test": "mocha tests/unit/"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^8.2.1"
   }
 }
