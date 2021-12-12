@@ -1,6 +1,6 @@
 const { STSClient, AssumeRoleCommand } = require("@aws-sdk/client-sts");
-const AWSXRay = require('aws-xray-sdk');
 const { validate: uuidValidate } = require('uuid');
+const AWSXRay = require('aws-xray-sdk');
 
 /**
  *
@@ -14,7 +14,10 @@ const { validate: uuidValidate } = require('uuid');
  * @returns {Object} object - API Gateway Lambda Proxy Output Format
  *
  */
-const client = AWSXRay.captureAWSv3Client(new STSClient({ }));
+let client = new STSClient({ });
+if (!process.env['AWS_SAM_LOCAL']) {
+    client = AWSXRay.captureAWSv3Client(client);
+}
 
 exports.lambdaHandler = async (event, context) => {
     try {
