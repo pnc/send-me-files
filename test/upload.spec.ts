@@ -12,9 +12,9 @@ test.describe('feature foo', () => {
       console.log(`Uncaught exception: "${exception}"`);
     });
 
-    expect(await page.screenshot()).toMatchSnapshot('test/landing.png');
+    expect(await page.screenshot({scale: 'css'})).toMatchSnapshot('test/landing.png');
     await page.setInputFiles('input', 'yarn.lock');
     await expect(page.locator('.card-file .card-subtitle')).toHaveText('Sent successfully. I have your file!');
-    expect(await page.screenshot()).toMatchSnapshot('test/succeeded.png');
+    expect(await page.screenshot({scale: 'css'})).toMatchSnapshot('test/succeeded.png');
   });
 });
