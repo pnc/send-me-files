@@ -1,0 +1,34 @@
+name: Tests
+
+on:
+  push:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install server dependencies
+        run: cd send-server && sam build
+
+      - name: Configure server environment
+        env:
+          ANONYMOUS_ROLE_ARN: ${{ secrets.ANONYMOUS_ROLE_ARN }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          jq --null-input --arg ANONYMOUS_ROLE_ARN "$ANONYMOUS_ROLE_ARN" --arg S3_BUCKET "$S3_BUCKET" '{"CredentialsFunction": {"ANONYMOUS_ROLE_ARN": $ANONYMOUS_ROLE_ARN, "S3_BUCKET": $S3_BUCKET}}' > send-server/env.json
+
+      - name: Install dependencies
+        run: yarn install && yarn exec playwright install-deps && yarn exec playwright install
+
+      - name: Run tests
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: yarn test
