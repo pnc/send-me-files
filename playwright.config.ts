@@ -1,7 +1,7 @@
 import { PlaywrightTestConfig, devices } from '@playwright/test';
 const config: PlaywrightTestConfig = {
   webServer: {
-    command: 'S3_BUCKET_ENDPOINT=send-phil-files-test-storagebucket-vgwu8ytprurq.s3.us-east-1.amazonaws.com yarn start',
+    command: 'yarn start',
     port: 1234,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
