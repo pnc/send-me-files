@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
@@ -41,3 +41,12 @@ jobs:
           AWS_REGION: us-east-1
           S3_BUCKET_ENDPOINT: ${{ secrets.S3_BUCKET }}.s3.us-east-1.amazonaws.com
         run: yarn test
+
+      - name: Upload test screenshots
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            test
+            test-results
