@@ -9,7 +9,8 @@
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "start": "parcel serve ./index.html & cd send-server && sam local start-api --env-vars env.json --warm-containers EAGER && sleep 4",
+    "start-web": "parcel serve ./index.html",
+    "start-server": "cd send-server && sam local start-api --env-vars env.json --warm-containers EAGER",
     "build": "parcel build ./index.html",
     "test": "playwright test"
   },

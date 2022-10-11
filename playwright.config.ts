@@ -1,10 +1,22 @@
 import { PlaywrightTestConfig, devices } from '@playwright/test';
 const config: PlaywrightTestConfig = {
-  webServer: {
-    command: 'yarn start',
-    port: 1234,
-    timeout: 120 * 1000,
-    reuseExistingServer: !process.env.CI,
+  webServer: [
+    {
+      command: 'yarn start-web',
+      port: 1234,
+      timeout: 120 * 1000,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'yarn start-server',
+      port: 3000,
+      timeout: 120 * 1000,
+      reuseExistingServer: !process.env.CI,
+    }
+  ],
+
+  use: {
+    baseURL: 'http://localhost:1234/'
   },
 
   expect: {

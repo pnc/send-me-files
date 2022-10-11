@@ -2,8 +2,6 @@
 
 Set up `.env`
 
-`yarn start`
-
 `yarn test`
 
 ## To Do
