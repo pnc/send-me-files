@@ -5,3 +5,4 @@ node_modules/
 yarn-error.log
 send-server/.aws-sam
 test-results/
+.env
