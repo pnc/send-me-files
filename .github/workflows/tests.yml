@@ -24,6 +24,13 @@ jobs:
         run: |
           jq --null-input --arg ANONYMOUS_ROLE_ARN "$ANONYMOUS_ROLE_ARN" --arg S3_BUCKET "$S3_BUCKET" '{"CredentialsFunction": {"ANONYMOUS_ROLE_ARN": $ANONYMOUS_ROLE_ARN, "S3_BUCKET": $S3_BUCKET}}' > send-server/env.json
 
+      - name: Debug
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION: us-east-1
+        run: aws sts get-caller-identity
+
       - name: Install dependencies
         run: yarn install && yarn exec playwright install-deps && yarn exec playwright install
 
@@ -31,4 +38,5 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
         run: yarn test
