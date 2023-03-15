@@ -4,8 +4,8 @@
     "@parcel/reporter-bundle-analyzer": "^2.0.1",
     "@playwright/test": "^1",
     "events": "^3.3.0",
-    "process": "^0.11.10",
     "parcel": "^2.7.0",
+    "process": "^0.11.10",
     "typescript": "^4.2.4"
   },
   "scripts": {
