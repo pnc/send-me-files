@@ -236,7 +236,9 @@ class UploadManager {
 
       if (!this.s3Client) {
         let host = document.location.host;
-        if (process.env.S3_BUCKET_ENDPOINT) {
+        // During development and test, this is overridden to allow direct, non-proxied
+        // access to S3.
+        if (process.env.S3_BUCKET_ENDPOINT && process.env.NODE_ENV !== 'production') {
           host = process.env.S3_BUCKET_ENDPOINT;
         }
         this.s3Client = new S3Client({
