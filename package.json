@@ -15,7 +15,7 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.41.0",
+    "@aws-sdk/client-s3": "^3.374.0",
     "@aws-sdk/lib-storage": "^3.41.0",
     "pretty-bytes": "^6",
     "react": "^18",
